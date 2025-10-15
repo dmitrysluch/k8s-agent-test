@@ -89,11 +89,11 @@
     <div class="container">
         <h1>Wolfram Alpha Clone</h1>
         <p>Enter mathematical expressions, equations, or functions to compute:</p>
-        
+
         <div class="input-section">
             <input type="text" id="queryInput" placeholder="Enter mathematical expression (e.g., 2+2, x^2+2x+1=0, sin(x))">
             <button onclick="compute()">Compute</button>
-            
+
             <div class="examples">
                 <p><strong>Examples:</strong></p>
                 <ul>
@@ -106,7 +106,7 @@
                 </ul>
             </div>
         </div>
-        
+
         <div class="result-section" id="resultSection">
             <div id="loading" class="loading" style="display: none;">Computing...</div>
             <div id="result"></div>
@@ -120,11 +120,10 @@
 
         function compute() {
             const query = document.getElementById('queryInput').value.trim();
-            if (!query) return;
 
             const loading = document.getElementById('loading');
             const resultDiv = document.getElementById('result');
-            
+
             loading.style.display = 'block';
             resultDiv.innerHTML = '';
 
@@ -138,23 +137,28 @@
             .then(response => response.json())
             .then(data => {
                 loading.style.display = 'none';
-                
+
                 let resultHTML = '';
-                
+
                 if (data.type === 'error') {
-                    resultHTML = `<div class="result error">
-                        <h3>Error</h3>
-                        <p>${data.result}</p>
-                    </div>`;
+                    resultHTML = ;
                 } else {
-                    resultHTML = `<div class="result">
-                        <h3>Result</h3>
-                        <div>${data.latex}</div>
-                        <p><strong>Value:</strong> ${data.result}</p>
-                    </div>`;
+                    resultHTML = ;
                 }
-                
+
                 resultDiv.innerHTML = resultHTML;
-                
+
                 // Re-render MathJax
                 if (typ
+MathJax !== 'undefined') {
+                    MathJax.typeset();
+                }
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                resultDiv.innerHTML = ;
+            });
+        }
+    </script>
+</body>
+</html>
