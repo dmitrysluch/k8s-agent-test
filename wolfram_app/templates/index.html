@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wolfram Alpha Clone</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .input-section {
+            margin-bottom: 30px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #007cba;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #005a87;
+        }
+        .result-section {
+            margin-top: 30px;
+            min-height: 200px;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #007cba;
+            margin-bottom: 15px;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .plot {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+        .examples {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        .examples ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .examples li {
+            margin-bottom: 5px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .examples li:hover {
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Wolfram Alpha Clone</h1>
+        <p>Enter mathematical expressions, equations, or functions to compute:</p>
+        
+        <div class="input-section">
+            <input type="text" id="queryInput" placeholder="Enter mathematical expression (e.g., 2+2, x^2+2x+1=0, sin(x))">
+            <button onclick="compute()">Compute</button>
+            
+            <div class="examples">
+                <p><strong>Examples:</strong></p>
+                <ul>
+                    <li onclick="setExample('2+2*3')">Basic arithmetic: 2+2*3</li>
+                    <li onclick="setExample('x^2 + 2*x + 1')">Polynomial: x^2 + 2*x + 1</li>
+                    <li onclick="setExample('x^2 - 4 = 0')">Equation: x^2 - 4 = 0</li>
+                    <li onclick="setExample('sin(x) + cos(x)')">Trigonometric: sin(x) + cos(x)</li>
+                    <li onclick="setExample('diff(x^2, x)')">Differentiation: diff(x^2, x)</li>
+                    <li onclick="setExample('integrate(x^2, x)')">Integration: integrate(x^2, x)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="result-section" id="resultSection">
+            <div id="loading" class="loading" style="display: none;">Computing...</div>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function setExample(example) {
+            document.getElementById('queryInput').value = example;
+        }
+
+        function compute() {
+            const query = document.getElementById('queryInput').value.trim();
+            if (!query) return;
+
+            const loading = document.getElementById('loading');
+            const resultDiv = document.getElementById('result');
+            
+            loading.style.display = 'block';
+            resultDiv.innerHTML = '';
+
+            fetch('/compute', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                
+                let resultHTML = '';
+                
+                if (data.type === 'error') {
+                    resultHTML = `<div class="result error">
+                        <h3>Error</h3>
+                        <p>${data.result}</p>
+                    </div>`;
+                } else {
+                    resultHTML = `<div class="result">
+                        <h3>Result</h3>
+                        <div>${data.latex}</div>
+                        <p><strong>Value:</strong> ${data.result}</p>
+                    </div>`;
+                }
+                
+                resultDiv.innerHTML = resultHTML;
+                
+                // Re-render MathJax
+                if (typ
